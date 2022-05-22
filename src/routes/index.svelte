@@ -1,13 +1,19 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import {
-		type SpeechRecognition,
-		createSpeechlySpeechRecognition
+		browserSupportsSpeechRecognition,
+		isNative,
+		NativeSpeechRecognition
+	} from '$lib/NativeSpeechRecognition';
+	import SpeechRecognition from '$lib/SpeechRecognition';
+	import {
+		createSpeechlySpeechRecognition,
+		type SpeechRecognition as SpeechRecognitionType
 	} from '@speechly/speech-recognition-polyfill';
+	import { onMount } from 'svelte';
 
 	const SPEECHLY_APP_ID = '8a8f8d27-95f8-4c25-95d2-bb06ee01d8a0';
 
-	let recognition: SpeechRecognition;
+	let recognition: SpeechRecognitionType;
 	let transcript: string[] = [];
 	let transcriptIndex = 0;
 
@@ -19,11 +25,6 @@
 	};
 
 	onMount(async () => {
-		let NativeSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-		if (navigator.brave) NativeSpeechRecognition = undefined;
-
-		window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
 		const SpeechRecognition =
 			NativeSpeechRecognition || createSpeechlySpeechRecognition(SPEECHLY_APP_ID);
 
@@ -42,27 +43,26 @@
 			if (e.results[0].isFinal) transcriptIndex++;
 		};
 
-		recognition.onstart = () => {
-			addToTranscript('--Starting Transcript--');
-		};
-
 		recognition.onend = () => {
 			addToTranscript('--Stopping Transcript--');
 		};
 
-		const isNative = SpeechRecognition === NativeSpeechRecognition;
-
-		let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition;
-
 		console.log({ SPEECHLY_APP_ID });
-		console.log({ _browserSupportsSpeechRecognition });
-		console.log({ isNative });
+		console.log({ browserSupportsSpeechRecognition });
+		console.log({ isNative: isNative(SpeechRecognition) });
 	});
 
 	const start = () => {
 		console.log('Start has been clicked (this is not a callback)');
+		addToTranscript('--Starting Transcript--');
 		recognition.start();
 	};
+
+	const listenContinuously = () =>
+		SpeechRecognition.startListening({
+			continuous: true,
+			language: 'en-GB'
+		});
 </script>
 
 <section>

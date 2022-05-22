@@ -5,8 +5,7 @@
 		"editor.defaultFormatter": "svelte.svelte-vscode",
 		"editor.codeActionsOnSave": [
 			"source.fixAll",
-			// "source.organizeImports", // sorts and removes unused imports
-			// "source.sortImports" // does nothing
+			"source.sortImports"
 		]
 	},
 	"typescript.tsserver.experimental.enableProjectDiagnostics": true,

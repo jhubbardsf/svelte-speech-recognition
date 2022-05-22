@@ -1,0 +1,36 @@
+<script lang="ts">
+	// <!-- import React, { useState } from 'react' -->
+	import SpeechRecognition from '$lib/SpeechRecognition';
+	import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
+	import DictaphoneWidgetA from './Dictaphone/DictaphoneWidgetA.svelte';
+	import DictaphoneWidgetB from './Dictaphone/DictaphoneWidgetB.svelte';
+
+	const appId = '8a8f8d27-95f8-4c25-95d2-bb06ee01d8a0';
+	const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
+	SpeechRecognition.applyPolyfill(SpeechlySpeechRecognition);
+
+	let showFirstWidget = true;
+	const toggleShowFirstWidget = () => (showFirstWidget = !showFirstWidget);
+
+	const listenContinuously = () =>
+		SpeechRecognition.startListening({
+			continuous: true,
+			language: 'en-GB'
+		});
+	const listenContinuouslyInChinese = () =>
+		SpeechRecognition.startListening({
+			continuous: true,
+			language: 'zh-CN'
+		});
+	const listenOnce = () => SpeechRecognition.startListening({ continuous: false });
+</script>
+
+<div>
+	<DictaphoneWidgetA />
+	<DictaphoneWidgetB />
+	<button on:click={listenOnce}>Listen once</button>
+	<button on:click={listenContinuously}>Listen continuously</button>
+	<button on:click={listenContinuouslyInChinese}>Listen continuously (Chinese)</button>
+	<button on:click={toggleShowFirstWidget}>Toggle first widget</button>
+	<button on:click={SpeechRecognition.stopListening}>Stop</button>
+</div>
