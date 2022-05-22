@@ -4,7 +4,6 @@
 		type SpeechRecognition,
 		createSpeechlySpeechRecognition
 	} from '@speechly/speech-recognition-polyfill';
-	import { detectBrave } from '$lib/detectBrave';
 
 	const SPEECHLY_APP_ID = '8a8f8d27-95f8-4c25-95d2-bb06ee01d8a0';
 
@@ -23,14 +22,7 @@
 		let NativeSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 		if (navigator.brave) NativeSpeechRecognition = undefined;
 
-		// const { createSpeechlySpeechRecognition } = await import(
-		// 	'@speechly/speech-recognition-polyfill'
-		// );
-
-		console.log('detectBrave: ', detectBrave());
 		window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-		console.log({ SPEECHLY_APP_ID });
 
 		const SpeechRecognition =
 			NativeSpeechRecognition || createSpeechlySpeechRecognition(SPEECHLY_APP_ID);
@@ -62,6 +54,7 @@
 
 		let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition;
 
+		console.log({ SPEECHLY_APP_ID });
 		console.log({ _browserSupportsSpeechRecognition });
 		console.log({ isNative });
 	});
