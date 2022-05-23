@@ -23,9 +23,9 @@ let _browserSupportsContinuousListening = _browserSupportsSpeechRecognition && !
 let recognitionManager: RecognitionManager
 
 // [X] useState
-// [ ] useEffect
+// [X] useEffect
 // [X] useReducer
-// [ ] userCallback
+// [X] userCallback
 // [X] useRef
 
 const useSpeechRecognition = ({
@@ -74,6 +74,7 @@ const useSpeechRecognition = ({
     };
 
     const testFuzzyMatch = (command: any, input: string, fuzzyMatchingThreshold: number) => {
+        console.log("testFuzzyMatch: ", { command, input, fuzzyMatchingThreshold });
         const commandToString = (typeof command === 'object') ? command.toString() : command
         const commandWithoutSpecials = commandToString
             .replace(/[&/\\#,+()!$~%.'":*?<>{}]/g, '')
@@ -200,9 +201,6 @@ const useSpeechRecognition = ({
 
     const transcript = concatTranscripts(finalTranscript, interimTranscript)
     return {
-        transcript,
-        interimTranscript,
-        finalTranscript,
         listening,
         isMicrophoneAvailable,
         resetTranscript,
