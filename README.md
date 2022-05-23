@@ -1,5 +1,5 @@
 # svelte-speech-recognition
-A Svelte library that converts speech from the microphone to text and makes it available to your Svelte components. This is a WIP and a was originally based off the svelte-speech-recognition library. 
+A Svelte library that converts speech from the microphone to text and makes it available to your Svelte components. This is a WIP and is originally based off the [react-speech-recognition](https://github.com/JamesBrill/react-speech-recognition) library. 
 
 ## How it works
 `useSpeechRecognition` is a Svelte hook that gives a component access to a transcript of speech picked up from the user's microphone.
@@ -15,7 +15,7 @@ it uses [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Speech
 * [Why you should use a polyfill with this library](#why-you-should-use-a-polyfill-with-this-library)
 * [Cross-browser example](#cross-browser-example)
 * [Polyfills](docs/POLYFILLS.md)
-* [API docs](docs/API.md)
+* [API docs](#)
 
 ## Installation
 
