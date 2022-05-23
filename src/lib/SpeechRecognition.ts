@@ -17,10 +17,13 @@ import type { SpeechRecognitionClass } from '@speechly/speech-recognition-polyfi
 import { get } from 'svelte/store';
 import { useEffect, useState } from './hooks.js';
 import { writable, type Subscriber, type Unsubscriber } from 'svelte/store';
+import { browser } from '$app/env';
 
 let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition
 let _browserSupportsContinuousListening = _browserSupportsSpeechRecognition && !isAndroid()
 let recognitionManager: RecognitionManager
+
+console.log('0', { _browserSupportsSpeechRecognition })
 
 // [X] useState
 // [X] useEffect
@@ -36,7 +39,7 @@ const useSpeechRecognition = ({
     // const [recognitionManager] = useState(SpeechRecognition.getRecognitionManager())
     const recognitionManager = SpeechRecognition.getRecognitionManager();
     // const [browserSupportsSpeechRecognition, setBrowserSupportsSpeechRecognition] = useState(_browserSupportsSpeechRecognition)
-    let browserSupportsSpeechRecognition = _browserSupportsSpeechRecognition;
+    let browserSupportsSpeechRecognition = !browser ? true : _browserSupportsSpeechRecognition;
     // const [browserSupportsContinuousListening, setBrowserSupportsContinuousListening] = useState(_browserSupportsContinuousListening)
     let browserSupportsContinuousListening = _browserSupportsContinuousListening;
     // const [{ interimTranscript, finalTranscript }, dispatch] = useReducer(transcriptReducer, {
@@ -47,9 +50,9 @@ const useSpeechRecognition = ({
         interimTranscript: recognitionManager.interimTranscript,
         finalTranscript: ''
     }, transcriptReducer)
-    const interimTranscript = get(transcriptStore).interimTranscript;
-    const finalTranscript = get(transcriptStore).finalTranscript;
-    // const { interimTranscript, finalTranscript } = transcriptReducer({}, CLEAR_TRANSCRIPT);
+
+    const interimTranscript = '';
+    const finalTranscript = '';
 
     // const [listening, setListening] = useState(recognitionManager.listening)
     let listening = recognitionManager.listening
