@@ -1,6 +1,15 @@
 {
   "name": "svelte-speech-recognition",
   "version": "0.0.1",
+  "author": "Josh Hubbard <josh@joshuahubbard.dev> (https://joshuahubbard.dev/)",
+  "description": "A Svelte wrapper for the Sortable.js library",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/jhubbardsf/svelte-speech-recognition.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -27,8 +36,15 @@
     "svelte": "^3.46.0",
     "svelte-check": "^2.2.6",
     "svelte-preprocess": "^4.10.1",
+    "svelte2tsx": "^0.5.10",
     "tslib": "^2.3.1",
     "typescript": "~4.6.2"
   },
-  "type": "module"
+  "type": "module",
+  "keywords": [
+    "svelte",
+    "svelte-kit",
+    "speech-recognition"
+  ],
+  "license": "MIT"
 }
