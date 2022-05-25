@@ -104,15 +104,6 @@ export default class RecognitionManager {
         })
     }
 
-    // emitBrowserSupportsSpeechRecognitionChange(browserSupportsSpeechRecognitionChange: boolean) {
-    //     console.log('emitBrowserSupportsSpeechRecognitionChange');
-    //     Object.keys(this.subscribers).forEach((id) => {
-    //         const { onBrowserSupportsSpeechRecognitionChange, onBrowserSupportsContinuousListeningChange } = this.subscribers[id]
-    //         onBrowserSupportsSpeechRecognitionChange(browserSupportsSpeechRecognitionChange)
-    //         onBrowserSupportsContinuousListeningChange(browserSupportsSpeechRecognitionChange)
-    //     })
-    // }
-
     disconnect(disconnectType: 'ABORT' | 'RESET' | 'STOP') {
         console.log('disconnect');
         if (this.recognition && get(this.listening)) {

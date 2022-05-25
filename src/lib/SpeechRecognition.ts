@@ -9,10 +9,12 @@ import isAndroid from './isAndroid';
 import RecognitionManager from './RecognitionManager'
 import { derived, get, writable, type Writable } from 'svelte/store';
 import { NativeSpeechRecognition } from './NativeSpeechRecognition'
-import type { SpeechRecognitionClass } from '@speechly/speech-recognition-polyfill'
+import type { SpeechRecognitionClass, SpeechRecognition as PolyfillSpeechRecognitionType } from '@speechly/speech-recognition-polyfill';
+
+
 let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition
 let _browserSupportsContinuousListening = _browserSupportsSpeechRecognition && !isAndroid()
-let recognitionManager: RecognitionManager
+let recognitionManager: RecognitionManager;
 
 type TranscriptStore = { interimTranscript: string, finalTranscript: string[] };
 const useSpeechRecognition = ({
@@ -173,7 +175,20 @@ const useSpeechRecognition = ({
         finalTranscript,
     }
 }
-const SpeechRecognition = {
+
+export type startListeningInput = { continuous?: boolean, language?: string };
+export interface SpeechRecognitionType {
+    counter: number,
+    applyPolyfill: (input: SpeechRecognitionClass) => void,
+    getRecognitionManager: () => RecognitionManager,
+    getRecognition: () => PolyfillSpeechRecognitionType | null,
+    startListening: (input: startListeningInput) => void,
+    stopListening: () => void,
+    abortListening: () => void,
+    browserSupportsSpeechRecognition: () => boolean,
+    browserSupportsContinuousListening: () => boolean,
+}
+const SpeechRecognition: SpeechRecognitionType = {
     counter: 0,
     applyPolyfill: (PolyfillSpeechRecognition: SpeechRecognitionClass) => {
         console.log("applyPolyfill");
