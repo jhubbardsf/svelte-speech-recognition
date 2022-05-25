@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-empty-function */
 import isAndroid from './isAndroid'
-import { debounce, concatTranscripts, browserSupportsPolyfills } from '$lib/utils'
 import { isNative } from './NativeSpeechRecognition'
+import { get, writable, type Writable } from 'svelte/store';
+import { debounce, concatTranscripts, browserSupportsPolyfills } from '$lib/utils'
 import type { SpeechRecognitionClass, SpeechRecognition, SpeechRecognitionErrorEvent } from '@speechly/speech-recognition-polyfill';
+
 
 export default class RecognitionManager {
     recognition: SpeechRecognition | null;
     pauseAfterDisconnect: boolean;
     interimTranscript: string;
     finalTranscript: string;
-    listening: boolean;
+    listening: Writable<boolean>;
     isMicrophoneAvailable: boolean;
     subscribers: any;
     onStopListening: any;
@@ -21,7 +23,7 @@ export default class RecognitionManager {
         this.pauseAfterDisconnect = false
         this.interimTranscript = ''
         this.finalTranscript = ''
-        this.listening = false
+        this.listening = writable(false)
         this.isMicrophoneAvailable = true
         this.subscribers = {}
         this.onStopListening = () => { }
@@ -70,7 +72,7 @@ export default class RecognitionManager {
 
     emitListeningChange(listening: boolean) {
         console.log('emitListeningChange');
-        this.listening = listening
+        this.listening.set(listening)
         Object.keys(this.subscribers).forEach((id) => {
             const { onListeningChange } = this.subscribers[id]
             onListeningChange(listening)
@@ -113,7 +115,7 @@ export default class RecognitionManager {
 
     disconnect(disconnectType: 'ABORT' | 'RESET' | 'STOP') {
         console.log('disconnect');
-        if (this.recognition && this.listening) {
+        if (this.recognition && get(this.listening)) {
             switch (disconnectType) {
                 case 'ABORT':
                     this.pauseAfterDisconnect = true
@@ -138,7 +140,7 @@ export default class RecognitionManager {
             this.recognition.onresult = () => { }
             this.recognition.onend = () => { }
             this.recognition.onerror = () => { }
-            if (this.listening) {
+            if (get(this.listening)) {
                 this.stopListening()
             }
         }
@@ -155,7 +157,7 @@ export default class RecognitionManager {
     onRecognitionDisconnect() {
         console.log('onRecognitionDisconnect');
         this.onStopListening()
-        this.listening = false
+        this.listening.set(false)
         if (this.pauseAfterDisconnect) {
             this.emitListeningChange(false)
         } else if (this.recognition) {
@@ -220,14 +222,14 @@ export default class RecognitionManager {
         // @ts-expect-error I believe this is a bug because Speechly doesn't have .lang.
         const isLanguageChanged = language && language !== this.recognition.lang
         if (isContinuousChanged || isLanguageChanged) {
-            if (this.listening) {
+            if (get(this.listening)) {
                 await this.stopListening()
             }
             this.recognition.continuous = isContinuousChanged ? continuous : this.recognition.continuous
             // @ts-expect-error I believe this is a bug because Speechly doesn't have .lang.
             this.recognition.lang = isLanguageChanged ? language : this.recognition.lang
         }
-        if (!this.listening) {
+        if (!get(this.listening)) {
             if (!this.recognition.continuous) {
                 this.resetTranscript()
                 this.emitClearTranscript()
@@ -269,25 +271,25 @@ export default class RecognitionManager {
 
     async start() {
         console.log('Start');
-        if (this.recognition && !this.listening) {
+        if (this.recognition && !get(this.listening)) {
             await this.recognition.start()
-            this.listening = true
+            this.listening.set(true)
         }
     }
 
     stop() {
         console.log('Stop');
-        if (this.recognition && this.listening) {
+        if (this.recognition && get(this.listening)) {
             this.recognition.stop()
-            this.listening = false
+            this.listening.set(false)
         }
     }
 
     abort() {
         console.log('Abort');
-        if (this.recognition && this.listening) {
+        if (this.recognition && get(this.listening)) {
             this.recognition.abort()
-            this.listening = false
+            this.listening.set(false)
         }
     }
 }

@@ -1,19 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { reducible } from './stores.js';
 import {
     commandToRegExp,
     compareTwoStringsUsingDiceCoefficient,
     browserSupportsPolyfills
 } from './utils'
-import { clearTranscript, appendTranscript } from './actions'
-// import { transcriptReducer } from './reducers'
 import RecognitionManager from './RecognitionManager'
 import isAndroid from './isAndroid'
 import { NativeSpeechRecognition } from './NativeSpeechRecognition'
 import type { SpeechRecognitionClass } from '@speechly/speech-recognition-polyfill'
 import { useEffect } from './hooks.js';
 import { browser } from '$app/env';
-import { get, writable } from 'svelte/store';
+import { get, readable, writable } from 'svelte/store';
 
 let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition
 let _browserSupportsContinuousListening = _browserSupportsSpeechRecognition && !isAndroid()
@@ -26,28 +23,32 @@ const useSpeechRecognition = ({
 }: { transcribing: boolean, clearTranscriptOnListen: boolean, commands: any[] }) => {
     const transcribingStore = writable(transcribing);
     const transcriptStore = writable({ interimTranscript: '', finalTranscript: '' });
+    const clearTranscriptOnListenStore = writable(clearTranscriptOnListen);
     const recognitionManager = SpeechRecognition.getRecognitionManager();
+
     let browserSupportsSpeechRecognition = !browser ? true : _browserSupportsSpeechRecognition;
     let browserSupportsContinuousListening = _browserSupportsContinuousListening;
-    // const [transcriptStore, dispatch] = reducible({
-    //     interimTranscript: recognitionManager.interimTranscript,
-    //     finalTranscript: ''
-    // }, transcriptReducer)
 
-    let listening = recognitionManager.listening;
+    const listening = recognitionManager.listening;
+    const listeningReadable = readable(false, set => {
+        const unsubscribe = listening.subscribe(value => {
+            set(value);
+        });
+
+        return unsubscribe;
+    });
+
     let isMicrophoneAvailable = recognitionManager.isMicrophoneAvailable
     const commandsRef = commands;
 
-    const dispatchClearTranscript = () => {
-        // TODO: Redo this now
-        //     dispatch(clearTranscript())
+    const clearTranscript = () => {
         transcriptStore.set({ interimTranscript: '', finalTranscript: '' })
     };
 
     const resetTranscript = () => {
         console.log('Hit reset transcript.');
         recognitionManager.resetTranscript()
-        dispatchClearTranscript()
+        clearTranscript()
     };
 
     const testFuzzyMatch = (command: any, input: string, fuzzyMatchingThreshold: number) => {
@@ -131,7 +132,6 @@ const useSpeechRecognition = ({
         console.log("handleTranscriptChange: ", { newInterimTranscript, newFinalTranscript });
         const isTranscribing = get(transcribingStore);
         if (isTranscribing) {
-            // dispatch(appendTranscript(newInterimTranscript, newFinalTranscript))
             const currentFinal = get(transcriptStore).finalTranscript;
             transcriptStore.set({
                 interimTranscript: newInterimTranscript,
@@ -141,9 +141,11 @@ const useSpeechRecognition = ({
         matchCommands(newInterimTranscript, newFinalTranscript)
     }
 
-    const handleClearTranscript = (clearTranscriptOnListen: boolean) => {
-        if (clearTranscriptOnListen) {
-            dispatchClearTranscript()
+    const handleClearTranscript = () => {
+        console.log("handleClearTranscript");
+        const clearTranscriptOnListenValue = get(clearTranscriptOnListenStore);
+        if (clearTranscriptOnListenValue) {
+            clearTranscript()
         }
     }
 
@@ -153,7 +155,7 @@ const useSpeechRecognition = ({
         SpeechRecognition.counter += 1
 
         const callbacks = {
-            onListeningChange: (newListening: boolean) => listening = newListening,
+            onListeningChange: (newListening: boolean) => listening.set(newListening),
             onMicrophoneAvailabilityChange: (newMicrophoneAvailability: boolean) => isMicrophoneAvailable = newMicrophoneAvailability,
             onTranscriptChange: handleTranscriptChange,
             onClearTranscript: handleClearTranscript,
@@ -166,16 +168,14 @@ const useSpeechRecognition = ({
             recognitionManager.unsubscribe(id)
         }
     }, () => [
-        transcribing, // This isn't being used properly
         clearTranscriptOnListen,
         recognitionManager,
-        handleTranscriptChange,
-        handleClearTranscript
     ])
 
     return {
         transcribing: transcribingStore,
-        listening,
+        clearTranscriptOnListen: clearTranscriptOnListenStore,
+        listening: listeningReadable,
         isMicrophoneAvailable,
         resetTranscript,
         browserSupportsSpeechRecognition,

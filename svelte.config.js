@@ -9,7 +9,11 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-
+		// vite: {
+		// 	esbuild: {
+		// 		drop: ['console', 'debugger']
+		// 	},
+		// },
 		// Override http methods in the Todo forms
 		methodOverride: {
 			allowed: ['PATCH', 'DELETE']

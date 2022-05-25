@@ -21,11 +21,11 @@ These are passed as an object argument to `useSpeechRecognition`:
 useSpeechRecognition({ transcribing, clearTranscriptOnListen, commands })
 ```
 
-#### transcribing [bool]
+#### transcribing [Writable<bool>]
 
 Is this component collecting a transcript or not? This is independent of the global `listening` state of the microphone. `true` by default.
 
-#### clearTranscriptOnListen [bool]
+#### clearTranscriptOnListen [Writable<bool>]
 
 Does this component clear its transcript when the microphone is turned on? Has no effect when continuous listening is enabled. `true` by default.
 
@@ -40,6 +40,7 @@ These are returned from `useSpeechRecognition`:
 ```sv
   const {
     transcriptStore,
+    clearTranscriptOnListen,
     resetTranscript,
     listening,
     browserSupportsSpeechRecognition,

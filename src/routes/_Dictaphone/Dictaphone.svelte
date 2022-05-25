@@ -2,24 +2,28 @@
 	import { useSpeechRecognition } from '$lib/SpeechRecognition';
 	import type { Command } from '$lib/types';
 
-	let clearTranscriptOnListen = true;
 	const toggleTranscribing = () => ($transcribing = !$transcribing);
-	const toggleClearTranscriptOnListen = () => (clearTranscriptOnListen = !clearTranscriptOnListen);
+	const toggleClearTranscriptOnListen = () =>
+		($clearTranscriptOnListen = !$clearTranscriptOnListen);
 
 	export let commands: Command[] = [];
 	const {
 		transcribing,
+		clearTranscriptOnListen,
 		resetTranscript,
 		listening,
 		browserSupportsSpeechRecognition,
 		isMicrophoneAvailable,
 		transcriptStore
-	} = useSpeechRecognition({ transcribing: true, clearTranscriptOnListen, commands });
+	} = useSpeechRecognition({
+		transcribing: true,
+		clearTranscriptOnListen: true,
+		commands
+	});
 
 	$: console.log($transcriptStore);
 </script>
 
-{browserSupportsSpeechRecognition}
 {#if browserSupportsSpeechRecognition}
 	{#if !isMicrophoneAvailable}
 		<span>Please allow access to the microphone</span>
@@ -27,9 +31,9 @@
 
 	<div style="display: 'flex'; flexDirection: 'column';">
 		<div>
-			<span>listening: {listening ? 'on' : 'off'}</span>
+			<span>listening: {$listening ? 'on' : 'off'}</span>
 			<span>transcribing: {$transcribing ? 'on' : 'off'}</span>
-			<span>clearTranscriptOnListen: {clearTranscriptOnListen ? 'on' : 'off'}</span>
+			<span>clearTranscriptOnListen: {$clearTranscriptOnListen ? 'on' : 'off'}</span>
 		</div>
 		<button on:click={resetTranscript}>Reset</button>
 		<button on:click={toggleTranscribing}>Toggle transcribing</button>
@@ -39,3 +43,12 @@
 {:else}
 	<span>No browser support</span>
 {/if}
+
+<style>
+	span {
+		display: block;
+	}
+	button {
+		width: 100%;
+	}
+</style>

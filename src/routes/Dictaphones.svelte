@@ -26,7 +26,9 @@
 </script>
 
 <div>
-	<DictaphoneWidgetA />
+	{#if showFirstWidget}
+		<DictaphoneWidgetA />
+	{/if}
 	<DictaphoneWidgetB />
 	<button on:click={listenOnce}>Listen once</button>
 	<button on:click={listenContinuously}>Listen continuously</button>
