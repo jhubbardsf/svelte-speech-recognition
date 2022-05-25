@@ -22,6 +22,7 @@ it uses [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Speech
 * [Basic example](#basic-example)
 * [Why you should use a polyfill with this library](#why-you-should-use-a-polyfill-with-this-library)
 * [Cross-browser example](#cross-browser-example)
+* [Svelte-Components](docs/COMPONENTS.md)
 * [Polyfills](docs/POLYFILLS.md)
 * [API docs](docs/API.md)
 
@@ -114,10 +115,10 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
     <div>
         <p>Microphone: {listening ? 'on' : 'off'}</p>
         <button
-        onTouchStart={startListening}
-        onMouseDown={startListening}
-        onTouchEnd={SpeechRecognition.stopListening}
-        onMouseUp={SpeechRecognition.stopListening}
+          onTouchStart={startListening}
+          onMouseDown={startListening}
+          onTouchEnd={SpeechRecognition.stopListening}
+          onMouseUp={SpeechRecognition.stopListening}
         >Hold to talk</button>
         <p>{$transcriptStore.finalTranscript}</p>
     </div>

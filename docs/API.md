@@ -154,7 +154,7 @@ If you want to listen continuously, set the `continuous` property to `true` when
 SpeechRecognition.startListening({ continuous: true })
 ```
 
-##### language [string]
+#### language [string]
 
 To listen for a specific language, you can pass a language tag (e.g. `'zh-CN'` for Chinese) when calling `startListening`.
 
