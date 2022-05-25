@@ -85,7 +85,7 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
 ```
 <script>
     import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
-    import { useSpeechRecognition } from 'svelte-speech-recognition';
+    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
 
     const appId = '<INSERT_SPEECHLY_APP_ID_HERE>';
     const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
@@ -114,12 +114,6 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
         <p>{$transcriptStore.finalTranscript}</p>
     </div>
 {/if}
-
-  return (
-
-  );
-};
-export default Dictaphone;
 ```
 
 ## Detecting browser support for Web Speech API
@@ -197,4 +191,94 @@ To set the transcript to an empty string, you can call the `resetTranscript` fun
 
 ```
 const { resetTranscript } = useSpeechRecognition()
+```
+
+## Commands
+
+To respond when the user says a particular phrase, you can pass in a list of commands to the `useSpeechRecognition` hook. Each command is an object with the following properties:
+- `command`: This is a string or `RegExp` representing the phrase you want to listen for. If you want to use the same callback for multiple commands, you can also pass in an array here, with each value being a string or `RegExp`
+- `callback`: The function that is executed when the command is spoken. The last argument that this function receives will always be an object containing the following properties:
+  - `command`: The command phrase that was matched. This can be useful when you provide an array of command phrases for the same callback and need to know which one triggered it
+  - `resetTranscript`: A function that sets the transcript to an empty string
+- `matchInterim`: Boolean that determines whether "interim" results should be matched against the command. This will make your component respond faster to commands, but also makes false positives more likely - i.e. the command may be detected when it is not spoken. This is `false` by default and should only be set for simple commands.
+- `isFuzzyMatch`: Boolean that determines whether the comparison between speech and `command` is based on similarity rather than an exact match. Fuzzy matching is useful for commands that are easy to mispronounce or be misinterpreted by the Speech Recognition engine (e.g. names of places, sports teams, restaurant menu items). It is intended for commands that are string literals without special characters. If `command` is a string with special characters or a `RegExp`, it will be converted to a string without special characters when fuzzy matching. The similarity that is needed to match the command can be configured with `fuzzyMatchingThreshold`. `isFuzzyMatch` is `false` by default. When it is set to `true`, it will pass four arguments to `callback`:
+  - The value of `command` (with any special characters removed)
+  - The speech that matched `command`
+  - The similarity between `command` and the speech
+  - The object mentioned in the `callback` description above
+- `fuzzyMatchingThreshold`: If the similarity of speech to `command` is higher than this value when `isFuzzyMatch` is turned on, the `callback` will be invoked. You should set this only if `isFuzzyMatch` is `true`. It takes values between `0` (will match anything) and `1` (needs an exact match). The default value is `0.8`.
+- `bestMatchOnly`: Boolean that, when `isFuzzyMatch` is `true`, determines whether the callback should only be triggered by the command phrase that _best_ matches the speech, rather than being triggered by all matching fuzzy command phrases. This is useful for fuzzy commands with multiple command phrases assigned to the same callback function - you may only want the callback to be triggered once for each spoken command. You should set this only if `isFuzzyMatch` is `true`. The default value is `false`.
+
+### Command symbols
+
+To make commands easier to write, the following symbols are supported:
+- Splats: this is just a `*` and will match multi-word text:
+  - Example: `'I would like to order *'`
+  - The words that match the splat will be passed into the callback, one argument per splat
+- Named variables: this is written `:<name>` and will match a single word:
+  - Example: `'I am :height metres tall'`
+  - The one word that matches the named variable will be passed into the callback
+- Optional words: this is a phrase wrapped in parentheses `(` and `)`, and is not required to match the command:
+  - Example: `'Pass the salt (please)'`
+  - The above example would match both `'Pass the salt'` and `'Pass the salt please'`
+
+### Example with commands
+```svelte
+<script lang="ts">
+  import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
+
+  let message = '';
+  const setMessage = (newMessage: string) => (message = newMessage);
+
+  const commands = [
+    {
+      command: 'I would like to order *',
+      callback: (food: string) => setMessage(`Your order is for: ${food}`),
+      matchInterim: true
+    },
+    {
+      command: 'The weather is :condition today',
+      callback: (condition: string) => setMessage(`Today, the weather is ${condition}`)
+    },
+    {
+      command: ['Hello', 'Hi'],
+      callback: ({ command }: { command: string }) =>
+        setMessage(`Hi there! You said: "${command}"`),
+      matchInterim: true
+    },
+    {
+      command: 'Beijing',
+      callback: (command: string, spokenPhrase: string, similarityRatio: number) =>
+        setMessage(`${command} and ${spokenPhrase} are ${similarityRatio * 100}% similar`),
+      // If the spokenPhrase is "Benji", the message would be "Beijing and Benji are 40% similar"
+      isFuzzyMatch: true,
+      fuzzyMatchingThreshold: 0.2
+    },
+    {
+      command: ['eat', 'sleep', 'leave'],
+      callback: (command: string) => setMessage(`Best matching command: ${command}`),
+      isFuzzyMatch: true,
+      fuzzyMatchingThreshold: 0.2,
+      bestMatchOnly: true
+    },
+    {
+      command: 'clear',
+      callback: ({ resetTranscript }: { resetTranscript: any }) => resetTranscript(),
+      matchInterim: true
+    }
+  ];
+
+  const { transcriptStore, browserSupportsSpeechRecognition } = useSpeechRecognition({ commands });
+  const startListening = () => SpeechRecognition.startListening({ continuous: true });
+</script>
+
+{#if browserSupportsSpeechRecognition}
+  <div>
+    <p>{message}</p>
+    <p>{$transcriptStore.finalTranscript}</p>
+  </div>
+{:else}
+  <p>Browser does not support speech recognition.</p>
+{/if}
+
 ```
