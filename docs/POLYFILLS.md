@@ -8,7 +8,7 @@ Under the hood, Web Speech API in Chrome uses Google's speech recognition server
 
 The `SpeechRecognition` class exported by `svelte-speech-recognition` has the method `applyPolyfill`. This can take an implementation of the [W3C SpeechRecognition specification](https://wicg.github.io/speech-api/#speechreco-section). From then on, that implementation will used by `svelte-speech-recognition` to transcribe speech picked up by the microphone.
 
-```
+```sv
 SpeechRecognition.applyPolyfill(SpeechRecognitionPolyfill)
 ```
 
@@ -39,7 +39,7 @@ Rather than roll your own, you should use a ready-made polyfill for a cloud prov
 
 Here is a basic example combining `speech-recognition-polyfill` and `svelte-speech-recognition` to get you started. This code worked with version 1.0.0 of the polyfill in May 2021 - if it has become outdated due to changes in the polyfill or in Speechly, please raise a GitHub issue or PR to get this updated.
 
-```
+```sv
 <script>
     import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
     import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
@@ -71,8 +71,6 @@ Here is a basic example combining `speech-recognition-polyfill` and `svelte-spee
         <p>{$transcriptStore.finalTranscript}</p>
     </div>
 {/if}
-};
-export default Dictaphone;
 ```
 
 ### Limitations
@@ -98,7 +96,7 @@ This is Microsoft's offering for speech recognition (among many other features).
 
 Here is a basic example combining `web-speech-cognitive-services` and `svelte-speech-recognition` to get you started (do not use this in production; for a production-friendly version, read on below). This code worked with version 7.1.0 of the polyfill in February 2021 - if it has become outdated due to changes in the polyfill or in Azure Cognitive Services, please raise a GitHub issue or PR to get this updated.
 
-```svelte
+```sv
 <script lang='ts'>
     import createSpeechServicesPonyfill from 'web-speech-cognitive-services';
     import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
@@ -143,7 +141,7 @@ Here is a basic example combining `web-speech-cognitive-services` and `svelte-sp
 Your subscription key is a secret that you should not be leaking to your users in production. In other words, it should never be downloaded to your users' browsers. A more secure approach that's recommended by Microsoft is to exchange your subscription key for an authorization token, which has a limited lifetime. You should get this token on your backend and pass this to your Svelte app. Microsoft give guidance on how to do this [here](https://docs.microsoft.com/en-us/azure/cognitive-services/authentication?tabs=powershell).
 
 Once your Svelte app has the authorization token, it should be passed into the polyfill creator instead of the subscription key like this:
-```
+```sv
 const { SpeechRecognition: AzureSpeechRecognition } = createSpeechServicesPonyfill({
   credentials: {
     region: REGION,

@@ -2,8 +2,8 @@
 	// <!-- import React, { useState } from 'react' -->
 	import SpeechRecognition from '$lib/SpeechRecognition';
 	import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
-	import DictaphoneWidgetA from './Dictaphone/DictaphoneWidgetA.svelte';
-	import DictaphoneWidgetB from './Dictaphone/DictaphoneWidgetB.svelte';
+	import DictaphoneWidgetA from './_Dictaphone/DictaphoneWidgetA.svelte';
+	import DictaphoneWidgetB from './_Dictaphone/DictaphoneWidgetB.svelte';
 
 	const appId = '8a8f8d27-95f8-4c25-95d2-bb06ee01d8a0';
 	const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);

@@ -1,5 +1,13 @@
 # svelte-speech-recognition
-A Svelte library that converts speech from the microphone to text and makes it available to your Svelte components. This is a WIP and is originally based off the [react-speech-recognition](https://github.com/JamesBrill/react-speech-recognition) library. 
+[![npm](https://img.shields.io/npm/v/svelte-speech-recognition?style=flat-square)](https://www.npmjs.com/package/svelte-speech-recognition)
+[![npm](https://img.shields.io/npm/dt/svelte-speech-recognition?style=flat-square)](https://www.npmjs.com/package/svelte-speech-recognition)
+[![Netlify](https://img.shields.io/netlify/e1d87723-3ac6-4e8a-8d60-b30a5e977bad?style=flat-square)](https://svelte-speech-recognition.netlify.app/)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jhubbardsf/svelte-speech-recognition?style=flat-square)](https://github.com/jhubbardsf/svelte-speech-recognition)
+<a href="https://www.buymeacoffee.com/jhubbard"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=jhubbard&button_colour=FFDD00&font_colour=000000&font_family=Poppins&outline_colour=000000&coffee_colour=ffffff" height=20 /></a>
+
+A Svelte library that converts speech from the microphone to text and makes it available to your Svelte components. Originally based off the [react-speech-recognition](https://github.com/JamesBrill/react-speech-recognition) library.
+
+NOTE: This is a WIP and still in alpha. There's still a bit of work to do before v1. That being said it's functional and any testing would be appreciated.
 
 ## How it works
 `useSpeechRecognition` is a Svelte hook that gives a component access to a transcript of speech picked up from the user's microphone.
@@ -15,7 +23,7 @@ it uses [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Speech
 * [Why you should use a polyfill with this library](#why-you-should-use-a-polyfill-with-this-library)
 * [Cross-browser example](#cross-browser-example)
 * [Polyfills](docs/POLYFILLS.md)
-* [API docs](#)
+* [API docs](docs/API.md)
 
 ## Installation
 
@@ -31,16 +39,16 @@ To import in your Svelte code:
 
 The most basic example of a component using this hook would be:
 
-```
+```sv
 <script lang='ts'>
-import { useSpeechRecognition } from 'svelte-speech-recognition';
+  import { useSpeechRecognition } from 'svelte-speech-recognition';
 
-const {
-    transcriptStore,
-    listening,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-} = useSpeechRecognition();
+  const {
+      transcriptStore,
+      listening,
+      resetTranscript,
+      browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
 </script>
 
 This is the final transcript:
@@ -82,7 +90,7 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
 * Install `@speechly/speech-recognition-polyfill` in your web app
 * You will need a Speechly app ID. To get one of these, sign up for free with Speechly and follow [the guide here](https://docs.speechly.com/quick-start/stt-only/)
 * Here's a component for a push-to-talk button. The basic example above would also work fine.
-```
+```sv
 <script>
     import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
     import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
@@ -120,7 +128,7 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
 
 If you choose not to use a polyfill, this library still fails gracefully on browsers that don't support speech recognition. It is recommended that you render some fallback content if it is not supported by the user's browser:
 
-```
+```sv
 {#if (!browserSupportsSpeechRecognition)}
   // Render some fallback content
 {/if}
@@ -143,7 +151,7 @@ For all other browsers, you can render fallback content using the `SpeechRecogni
 
 Even if the browser supports the Web Speech API, the user still has to give permission for their microphone to be used before transcription can begin. They are asked for permission when `svelte-speech-recognition` first tries to start listening. At this point, you can detect when the user denies access via the `isMicrophoneAvailable` state. When this becomes `false`, it's advised that you disable voice-driven features and indicate that microphone access is needed for them to work.
 
-```
+```sv
 {#if (!isMicrophoneAvailable)}
   // Render some fallback content
 {/if}
@@ -157,7 +165,7 @@ Before consuming the transcript, you should be familiar with `SpeechRecognition`
 
 To start listening to speech, call the `startListening` function.
 
-```
+```sv
 SpeechRecognition.startListening()
 ```
 
@@ -167,13 +175,13 @@ This is an asynchronous function, so it will need to be awaited if you want to d
 
 To turn the microphone off, but still finish processing any speech in progress, call `stopListening`.
 
-```
+```sv
 SpeechRecognition.stopListening()
 ```
 
 To turn the microphone off, and cancel the processing of any speech in progress, call `abortListening`.
 
-```
+```sv
 SpeechRecognition.abortListening()
 ```
 
@@ -181,7 +189,7 @@ SpeechRecognition.abortListening()
 
 To make the microphone transcript available as a Svelte store in your component. It has the interimTranscript and finalTranscript object, simply add:
 
-```
+```sv
 const { transcriptStore } = useSpeechRecognition()
 ```
 
@@ -189,7 +197,7 @@ const { transcriptStore } = useSpeechRecognition()
 
 To set the transcript to an empty string, you can call the `resetTranscript` function provided by `useSpeechRecognition`. Note that this is local to your component and does not affect any other components using Speech Recognition.
 
-```
+```sv
 const { resetTranscript } = useSpeechRecognition()
 ```
 
@@ -223,7 +231,7 @@ To make commands easier to write, the following symbols are supported:
   - The above example would match both `'Pass the salt'` and `'Pass the salt please'`
 
 ### Example with commands
-```svelte
+```sv
 <script lang="ts">
   import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
 
@@ -280,5 +288,4 @@ To make commands easier to write, the following symbols are supported:
 {:else}
   <p>Browser does not support speech recognition.</p>
 {/if}
-
 ```
