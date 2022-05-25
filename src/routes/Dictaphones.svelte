@@ -56,6 +56,7 @@
 	}
 
 	.buttons button {
+		border: 1px solid #000;
 		padding: 5px;
 		margin: 5px;
 	}
