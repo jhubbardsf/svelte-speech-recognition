@@ -1,6 +1,7 @@
 import { afterUpdate, onDestroy } from 'svelte';
 import { writable, get, type Writable } from 'svelte/store';
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useEffect(cb: () => any, deps: () => any) {
     let cleanup: () => void;
 
@@ -13,6 +14,7 @@ export function useEffect(cb: () => any, deps: () => any) {
         let values: never[] = [];
         afterUpdate(() => {
             const new_values = deps();
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             if (new_values.some((value: any, i: number) => value !== values[i])) {
                 apply();
                 values = new_values;

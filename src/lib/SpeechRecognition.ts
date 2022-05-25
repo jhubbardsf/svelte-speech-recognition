@@ -6,13 +6,14 @@ import {
     browserSupportsPolyfills
 } from './utils'
 import { clearTranscript, appendTranscript } from './actions'
-import { transcriptReducer } from './reducers'
+// import { transcriptReducer } from './reducers'
 import RecognitionManager from './RecognitionManager'
 import isAndroid from './isAndroid'
 import { NativeSpeechRecognition } from './NativeSpeechRecognition'
 import type { SpeechRecognitionClass } from '@speechly/speech-recognition-polyfill'
 import { useEffect } from './hooks.js';
 import { browser } from '$app/env';
+import { get, writable } from 'svelte/store';
 
 let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition
 let _browserSupportsContinuousListening = _browserSupportsSpeechRecognition && !isAndroid()
@@ -23,20 +24,24 @@ const useSpeechRecognition = ({
     clearTranscriptOnListen = true,
     commands = []
 }: { transcribing: boolean, clearTranscriptOnListen: boolean, commands: any[] }) => {
+    const transcribingStore = writable(transcribing);
+    const transcriptStore = writable({ interimTranscript: '', finalTranscript: '' });
     const recognitionManager = SpeechRecognition.getRecognitionManager();
     let browserSupportsSpeechRecognition = !browser ? true : _browserSupportsSpeechRecognition;
     let browserSupportsContinuousListening = _browserSupportsContinuousListening;
-    const [transcriptStore, dispatch] = reducible({
-        interimTranscript: recognitionManager.interimTranscript,
-        finalTranscript: ''
-    }, transcriptReducer)
+    // const [transcriptStore, dispatch] = reducible({
+    //     interimTranscript: recognitionManager.interimTranscript,
+    //     finalTranscript: ''
+    // }, transcriptReducer)
 
     let listening = recognitionManager.listening;
     let isMicrophoneAvailable = recognitionManager.isMicrophoneAvailable
     const commandsRef = commands;
 
     const dispatchClearTranscript = () => {
-        dispatch(clearTranscript())
+        // TODO: Redo this now
+        //     dispatch(clearTranscript())
+        transcriptStore.set({ interimTranscript: '', finalTranscript: '' })
     };
 
     const resetTranscript = () => {
@@ -122,10 +127,16 @@ const useSpeechRecognition = ({
         })
     }
 
-    const handleTranscriptChange = (newInterimTranscript: string, newFinalTranscript: string) => {
+    const handleTranscriptChange = (newInterimTranscript: string, newFinalTranscript: string) => { // Handle this with a svelte store
         console.log("handleTranscriptChange: ", { newInterimTranscript, newFinalTranscript });
-        if (transcribing) {
-            dispatch(appendTranscript(newInterimTranscript, newFinalTranscript))
+        const isTranscribing = get(transcribingStore);
+        if (isTranscribing) {
+            // dispatch(appendTranscript(newInterimTranscript, newFinalTranscript))
+            const currentFinal = get(transcriptStore).finalTranscript;
+            transcriptStore.set({
+                interimTranscript: newInterimTranscript,
+                finalTranscript: currentFinal + newFinalTranscript
+            })
         }
         matchCommands(newInterimTranscript, newFinalTranscript)
     }
@@ -155,7 +166,7 @@ const useSpeechRecognition = ({
             recognitionManager.unsubscribe(id)
         }
     }, () => [
-        transcribing,
+        transcribing, // This isn't being used properly
         clearTranscriptOnListen,
         recognitionManager,
         handleTranscriptChange,
@@ -163,6 +174,7 @@ const useSpeechRecognition = ({
     ])
 
     return {
+        transcribing: transcribingStore,
         listening,
         isMicrophoneAvailable,
         resetTranscript,

@@ -2,23 +2,21 @@
 	import { useSpeechRecognition } from '$lib/SpeechRecognition';
 	import type { Command } from '$lib/types';
 
-	let transcribing = true;
 	let clearTranscriptOnListen = true;
-	const toggleTranscribing = () => (transcribing = !transcribing);
+	const toggleTranscribing = () => ($transcribing = !$transcribing);
 	const toggleClearTranscriptOnListen = () => (clearTranscriptOnListen = !clearTranscriptOnListen);
 
 	export let commands: Command[] = [];
 	const {
+		transcribing,
 		resetTranscript,
 		listening,
 		browserSupportsSpeechRecognition,
 		isMicrophoneAvailable,
 		transcriptStore
-	} = useSpeechRecognition({ transcribing, clearTranscriptOnListen, commands });
-	console.log({ browserSupportsSpeechRecognition });
+	} = useSpeechRecognition({ transcribing: true, clearTranscriptOnListen, commands });
 
 	$: console.log($transcriptStore);
-	$: console.log({ browserSupportsSpeechRecognition });
 </script>
 
 {browserSupportsSpeechRecognition}
@@ -30,7 +28,7 @@
 	<div style="display: 'flex'; flexDirection: 'column';">
 		<div>
 			<span>listening: {listening ? 'on' : 'off'}</span>
-			<span>transcribing: {transcribing ? 'on' : 'off'}</span>
+			<span>transcribing: {$transcribing ? 'on' : 'off'}</span>
 			<span>clearTranscriptOnListen: {clearTranscriptOnListen ? 'on' : 'off'}</span>
 		</div>
 		<button on:click={resetTranscript}>Reset</button>
