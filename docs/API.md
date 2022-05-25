@@ -23,11 +23,11 @@ useSpeechRecognition({ transcribing, clearTranscriptOnListen, commands })
 
 #### transcribing [Writable<bool>]
 
-Is this component collecting a transcript or not? This is independent of the global `listening` state of the microphone. `true` by default.
+Writable svelte store. Is this component collecting a transcript or not? This is independent of the global `listening` state of the microphone. `true` by default.
 
 #### clearTranscriptOnListen [Writable<bool>]
 
-Does this component clear its transcript when the microphone is turned on? Has no effect when continuous listening is enabled. `true` by default.
+Writable svelte store. Does this component clear its transcript when the microphone is turned on? Has no effect when continuous listening is enabled. `true` by default.
 
 #### commands [list]
 
@@ -40,6 +40,8 @@ These are returned from `useSpeechRecognition`:
 ```sv
   const {
     transcriptStore,
+    interimTranscript
+    finalTranscript,
     clearTranscriptOnListen,
     resetTranscript,
     listening,
@@ -48,19 +50,19 @@ These are returned from `useSpeechRecognition`:
   } = useSpeechRecognition()
 ```
 
-#### transcriptStore [svelte store]
+#### transcriptStore [Readable<{ interimTranscript: string, finalTranscript: string[] }>]
 
 Transcription store with a finalTranscript and interimTranscript object.
 
-#### resetTranscript [function]
+#### resetTranscript [() => void]
 
-Sets `$transcriptStore.finalTranscript` & `$transcriptStore.interimTranscript` to an empty string.
+Sets `transcriptStore.finalTranscript` to empty array & `transcriptStore.interimTranscript` to an empty string.
 
-#### listening [bool]
+#### listening [Readable<bool>]
 
-If true, the Web Speech API is listening to speech from the microphone.
+Svelte store that is updated when the Web Speech API is listening to speech from the microphone.
 
-#### $transcriptStore.interimTranscript [string]
+#### transcriptStore.interimTranscript [string]
 
 Transcription of speech that the Web Speech API is still processing (i.e. it's still deciding what has just been spoken).
 
@@ -75,7 +77,7 @@ The difference between interim and final transcripts can be illustrated by an ex
 | 'Hello, I am'       | 'James'            |
 | 'Hello, I am James' | ''                 |
 
-#### $transcriptStore.finalTranscript [string]
+#### transcriptStore.finalTranscript [string]
 
 Transcription of speech that the Web Speech API has finished processing.
 
