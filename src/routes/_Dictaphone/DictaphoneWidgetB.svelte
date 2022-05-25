@@ -26,8 +26,24 @@
 	];
 </script>
 
-<div>
+<div class="dictaphone">
 	<h3>Dictaphone B</h3>
-	<p>{message}</p>
-	<Dictaphone {commands} />
+	<div class="response">
+		<b>Bot Response: {message}</b>
+	</div>
+
+	<div>
+		<Dictaphone {commands} />
+	</div>
 </div>
+
+<style>
+	.dictaphone {
+		border: 1px solid black;
+		padding: 15px;
+	}
+	.response {
+		font-size: large;
+		margin-bottom: 10px;
+	}
+</style>

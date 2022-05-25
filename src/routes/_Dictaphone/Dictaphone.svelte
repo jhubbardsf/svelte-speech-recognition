@@ -14,14 +14,15 @@
 		listening,
 		browserSupportsSpeechRecognition,
 		isMicrophoneAvailable,
-		transcriptStore
+		interimTranscript,
+		finalTranscript
 	} = useSpeechRecognition({
 		transcribing: true,
 		clearTranscriptOnListen: true,
 		commands
 	});
 
-	$: console.log($transcriptStore);
+	$: console.log({ $finalTranscript });
 </script>
 
 {#if browserSupportsSpeechRecognition}
@@ -38,7 +39,8 @@
 		<button on:click={resetTranscript}>Reset</button>
 		<button on:click={toggleTranscribing}>Toggle transcribing</button>
 		<button on:click={toggleClearTranscriptOnListen}>Toggle clearTranscriptOnListen</button>
-		<span>{$transcriptStore.finalTranscript || $transcriptStore.interimTranscript}</span>
+		<span>Interim: {$interimTranscript}</span>
+		<span>Final: {$finalTranscript}</span>
 	</div>
 {:else}
 	<span>No browser support</span>

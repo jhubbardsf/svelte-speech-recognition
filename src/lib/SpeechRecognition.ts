@@ -7,13 +7,14 @@ import {
 import { browser } from '$app/env';
 import isAndroid from './isAndroid';
 import RecognitionManager from './RecognitionManager'
-import { derived, get, writable } from 'svelte/store';
+import { derived, get, writable, type Writable } from 'svelte/store';
 import { NativeSpeechRecognition } from './NativeSpeechRecognition'
 import type { SpeechRecognitionClass } from '@speechly/speech-recognition-polyfill'
 let _browserSupportsSpeechRecognition = !!NativeSpeechRecognition
 let _browserSupportsContinuousListening = _browserSupportsSpeechRecognition && !isAndroid()
 let recognitionManager: RecognitionManager
 
+type TranscriptStore = { interimTranscript: string, finalTranscript: string[] };
 const useSpeechRecognition = ({
     transcribing = true,
     clearTranscriptOnListen = true,
@@ -23,7 +24,7 @@ const useSpeechRecognition = ({
 
     // Stores to be used in Svelte files
     const transcribingStore = writable(transcribing);
-    const transcriptStore = writable({ interimTranscript: '', finalTranscript: '' });
+    const transcriptStore: Writable<TranscriptStore> = writable({ interimTranscript: '', finalTranscript: [] });
     const clearTranscriptOnListenStore = writable(clearTranscriptOnListen);
     const listeningReadable = derived(recognitionManager.listening, $listening => $listening);
 
@@ -36,7 +37,7 @@ const useSpeechRecognition = ({
     let isMicrophoneAvailable = recognitionManager.isMicrophoneAvailable
 
     const clearTranscript = () => {
-        transcriptStore.set({ interimTranscript: '', finalTranscript: '' })
+        transcriptStore.set({ interimTranscript: '', finalTranscript: [] })
     };
 
     const resetTranscript = () => {
@@ -126,10 +127,13 @@ const useSpeechRecognition = ({
         console.log("handleTranscriptChange: ", { newInterimTranscript, newFinalTranscript });
         const isTranscribing = get(transcribingStore);
         if (isTranscribing) {
-            const currentFinal = get(transcriptStore).finalTranscript;
-            transcriptStore.set({
-                interimTranscript: newInterimTranscript,
-                finalTranscript: currentFinal + newFinalTranscript
+            transcriptStore.update(n => {
+
+                n.interimTranscript = newInterimTranscript;
+                if (newFinalTranscript)
+                    n.finalTranscript = [...n.finalTranscript, newFinalTranscript];
+
+                return n;
             })
         }
         matchCommands(newInterimTranscript, newFinalTranscript)
@@ -143,8 +147,7 @@ const useSpeechRecognition = ({
         }
     }
 
-    // useEffect(() => {
-    // console.log("Inside useEffect");
+    // Old use effect block
     const id = SpeechRecognition.counter
     SpeechRecognition.counter += 1
 
@@ -153,18 +156,9 @@ const useSpeechRecognition = ({
         onMicrophoneAvailabilityChange: (newMicrophoneAvailability: boolean) => isMicrophoneAvailable = newMicrophoneAvailability,
         onTranscriptChange: handleTranscriptChange,
         onClearTranscript: handleClearTranscript,
-        // onBrowserSupportsSpeechRecognitionChange: (newBrowserSupportsSpeechRecognition: boolean) => browserSupportsSpeechRecognition = newBrowserSupportsSpeechRecognition,
-        // onBrowserSupportsContinuousListeningChange: (newBrowserSupportsContinuousListening: boolean) => browserSupportsContinuousListening = newBrowserSupportsContinuousListening
     }
     recognitionManager.subscribe(id, callbacks)
-
-    //     return () => {
-    //         recognitionManager.unsubscribe(id)
-    //     }
-    // }, () => [
-    //     clearTranscriptOnListen,
-    //     recognitionManager,
-    // ])
+    // Old use effect block
 
     return {
         transcribing: transcribingStore,
@@ -182,6 +176,7 @@ const useSpeechRecognition = ({
 const SpeechRecognition = {
     counter: 0,
     applyPolyfill: (PolyfillSpeechRecognition: SpeechRecognitionClass) => {
+        console.log("applyPolyfill");
         if (recognitionManager) {
             recognitionManager.setSpeechRecognition(PolyfillSpeechRecognition)
         } else {
@@ -192,12 +187,14 @@ const SpeechRecognition = {
         _browserSupportsContinuousListening = browserSupportsPolyfill
     },
     getRecognitionManager: () => {
+        console.log("getRecognitionManager");
         if (!recognitionManager) {
             recognitionManager = new RecognitionManager(NativeSpeechRecognition)
         }
         return recognitionManager
     },
     getRecognition: () => {
+        console.log("getRecognition");
         const recognitionManager = SpeechRecognition.getRecognitionManager()
         return recognitionManager.getRecognition()
     },
@@ -207,10 +204,12 @@ const SpeechRecognition = {
         await recognitionManager.startListening({ continuous, language })
     },
     stopListening: async () => {
+        console.log("Stop listening");
         const recognitionManager = SpeechRecognition.getRecognitionManager()
         await recognitionManager.stopListening()
     },
     abortListening: async () => {
+        console.log("Abort listening");
         const recognitionManager = SpeechRecognition.getRecognitionManager()
         await recognitionManager.abortListening()
     },

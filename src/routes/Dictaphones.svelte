@@ -30,9 +30,33 @@
 		<DictaphoneWidgetA />
 	{/if}
 	<DictaphoneWidgetB />
-	<button on:click={listenOnce}>Listen once</button>
-	<button on:click={listenContinuously}>Listen continuously</button>
-	<button on:click={listenContinuouslyInChinese}>Listen continuously (Chinese)</button>
-	<button on:click={toggleShowFirstWidget}>Toggle first widget</button>
-	<button on:click={SpeechRecognition.stopListening}>Stop</button>
+	<div class="buttons">
+		<button on:click={listenOnce}>Listen once</button>
+		<button on:click={listenContinuously}>Listen continuously</button>
+		<button on:click={listenContinuouslyInChinese}>Listen continuously (Chinese)</button>
+		<button on:click={toggleShowFirstWidget}>Toggle first widget</button>
+		<button on:click={SpeechRecognition.stopListening}>Stop</button>
+	</div>
+
+	<section>
+		<h1>Commands to Try</h1>
+		<p class="explanation">
+			Some commands to try saying: "YOUR_NAME is my name.", "The weather is CONDITION today.", "My
+			top sports are TEAM and TEAM", "clear". Look in
+			src/routes/_Dictaphone/DictaphoneWidgetA.svelte and
+			src/routes/_Dictaphone/DictaphoneWidgetb.svelte to see more commands and how they work.
+		</p>
+	</section>
 </div>
+
+<style>
+	.buttons {
+		display: flex;
+		justify-content: center;
+	}
+
+	.buttons button {
+		padding: 5px;
+		margin: 5px;
+	}
+</style>
