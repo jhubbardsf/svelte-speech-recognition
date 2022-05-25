@@ -1,10 +1,11 @@
 <script lang="ts">
+	import type { Command } from '$lib/types';
 	import Dictaphone from './Dictaphone.svelte';
 
 	let message = '';
 	const setMessage = (newMessage: string) => (message = newMessage);
 
-	const commands = [
+	const commands: Command[] = [
 		{
 			command: 'I would like to order *',
 			callback: (food: string) => setMessage(`Your order is for: ${food}`),
@@ -37,7 +38,8 @@
 		},
 		{
 			command: 'clear',
-			callback: ({ resetTranscript }: { resetTranscript: any }) => resetTranscript(),
+			// @ts-expect-error Write a better type for this.
+			callback: ({ resetTranscript }) => resetTranscript(),
 			matchInterim: true
 		}
 	];

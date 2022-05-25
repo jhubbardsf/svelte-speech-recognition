@@ -217,12 +217,14 @@ export default class RecognitionManager {
         }
 
         const isContinuousChanged = continuous !== this.recognition.continuous
+        // @ts-expect-error I believe this is a bug because Speechly doesn't have .lang.
         const isLanguageChanged = language && language !== this.recognition.lang
         if (isContinuousChanged || isLanguageChanged) {
             if (this.listening) {
                 await this.stopListening()
             }
             this.recognition.continuous = isContinuousChanged ? continuous : this.recognition.continuous
+            // @ts-expect-error I believe this is a bug because Speechly doesn't have .lang.
             this.recognition.lang = isLanguageChanged ? language : this.recognition.lang
         }
         if (!this.listening) {

@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { useSpeechRecognition } from '$lib/SpeechRecognition';
+	import type { Command } from '$lib/types';
 
 	let transcribing = true;
 	let clearTranscriptOnListen = true;
 	const toggleTranscribing = () => (transcribing = !transcribing);
 	const toggleClearTranscriptOnListen = () => (clearTranscriptOnListen = !clearTranscriptOnListen);
 
-	export let commands: any[] = [];
+	export let commands: Command[] = [];
 	const {
 		resetTranscript,
 		listening,
