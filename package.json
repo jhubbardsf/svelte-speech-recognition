@@ -1,6 +1,6 @@
 {
 	"name": "svelte-speech-recognition",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"author": "Josh Hubbard <josh@joshuahubbard.dev> (https://joshuahubbard.dev/)",
 	"description": "A Svelte wrapper for the Sortable.js library",
 	"repository": {

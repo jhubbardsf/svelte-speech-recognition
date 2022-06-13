@@ -116,10 +116,10 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
     <div>
         <p>Microphone: {listening ? 'on' : 'off'}</p>
         <button
-          onTouchStart={startListening}
-          onMouseDown={startListening}
-          onTouchEnd={SpeechRecognition.stopListening}
-          onMouseUp={SpeechRecognition.stopListening}
+          on:touchstart={startListening}
+          on:mousedown={startListening}
+          on:touchend={SpeechRecognition.stopListening}
+          on:mouseup={SpeechRecognition.stopListening}
         >Hold to talk</button>
         <p>{$transcriptStore.finalTranscript}</p>
     </div>
