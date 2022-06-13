@@ -34,7 +34,7 @@ To install:
 
 To import in your Svelte code:
 
-`import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition'`
+`import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition'`
 
 ## Basic example
 
@@ -42,7 +42,7 @@ The most basic example of a component using this hook would be:
 
 ```sv
 <script lang='ts'>
-  import { useSpeechRecognition } from 'svelte-speech-recognition';
+  import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition';
 
   const {
       transcriptStore,
@@ -94,7 +94,8 @@ You can find the full guide for setting up a polyfill [here](docs/POLYFILLS.md).
 ```sv
 <script>
     import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
-    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
+    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition';
+
 
     const appId = '<INSERT_SPEECHLY_APP_ID_HERE>';
     const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
@@ -234,7 +235,7 @@ To make commands easier to write, the following symbols are supported:
 ### Example with commands
 ```sv
 <script lang="ts">
-  import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
+  import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition';
 
   let message = '';
   const setMessage = (newMessage: string) => (message = newMessage);

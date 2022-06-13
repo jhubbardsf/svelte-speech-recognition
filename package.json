@@ -1,6 +1,6 @@
 {
 	"name": "svelte-speech-recognition",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"author": "Josh Hubbard <josh@joshuahubbard.dev> (https://joshuahubbard.dev/)",
 	"description": "A Svelte wrapper for the Sortable.js library",
 	"repository": {
@@ -19,7 +19,8 @@
 		"check": "svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check --plugin-search-dir=. . && eslint .",
-		"format": "prettier --write --plugin-search-dir=. ."
+		"format": "prettier --write --plugin-search-dir=. .",
+		"debugger": "NODE_OPTIONS=\"--inspect\" svelte-kit dev"
 	},
 	"devDependencies": {
 		"@speechly/speech-recognition-polyfill": "^1.1.0",

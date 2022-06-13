@@ -21,7 +21,7 @@ const useSpeechRecognition = ({
     transcribing = true,
     clearTranscriptOnListen = true,
     commands = []
-}: { transcribing: boolean, clearTranscriptOnListen: boolean, commands: any[] }) => {
+} = {}) => {
     const recognitionManager = SpeechRecognition.getRecognitionManager();
 
     // Stores to be used in Svelte files

@@ -10,7 +10,7 @@
 Hook for consuming speech recorded by the microphone. Import with:
 
 ```sv
-import { useSpeechRecognition } from 'svelte-speech-recognition'
+import { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition'
 ```
 
 ### Input props
@@ -118,7 +118,7 @@ The user has to give permission for their microphone to be used before transcrip
 Object providing functions to manage the global state of the microphone. Import with:
 
 ```sv
-import SpeechRecognition from 'svelte-speech-recognition'
+import SpeechRecognition from 'svelte-speech-recognition/SpeechRecognition'
 ```
 
 ### Functions

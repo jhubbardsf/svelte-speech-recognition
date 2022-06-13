@@ -1,0 +1,1 @@
+export { default as SpeechRecognition, useSpeechRecognition } from './SpeechRecognition';

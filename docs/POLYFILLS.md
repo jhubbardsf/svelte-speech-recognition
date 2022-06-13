@@ -42,7 +42,7 @@ Here is a basic example combining `speech-recognition-polyfill` and `svelte-spee
 ```sv
 <script>
     import { createSpeechlySpeechRecognition } from '@speechly/speech-recognition-polyfill';
-    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
+    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition';
 
     const appId = '<INSERT_SPEECHLY_APP_ID_HERE>';
     const SpeechlySpeechRecognition = createSpeechlySpeechRecognition(appId);
@@ -99,7 +99,7 @@ Here is a basic example combining `web-speech-cognitive-services` and `svelte-sp
 ```sv
 <script lang='ts'>
     import createSpeechServicesPonyfill from 'web-speech-cognitive-services';
-    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition';
+    import SpeechRecognition, { useSpeechRecognition } from 'svelte-speech-recognition/SpeechRecognition';
 
     const SUBSCRIPTION_KEY = '<INSERT_SUBSCRIPTION_KEY_HERE>';
     const REGION = '<INSERT_REGION_HERE>';
